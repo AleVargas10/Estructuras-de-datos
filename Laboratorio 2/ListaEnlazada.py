@@ -86,7 +86,8 @@ class ListaEnlazada():
 
         anterior.set_siguiente(nodoActual.get_siguiente())
         nodoActual = None       
-        
+
+    #Devuelve al persona de mayor edad.
     def mayorEdad(self):
         nodoActual = self.primero
         mayor = -float('inf')
@@ -107,7 +108,7 @@ class ListaEnlazada():
         else:
             return "\nNo hay personas registradas."
 
-        
+    #Devuelve la persona de menor edad    
     def menorEdad(self):
         nodoActual = self.primero
         menor = float('inf')
@@ -127,7 +128,8 @@ class ListaEnlazada():
 
         else:
             return "\nNo hay personas registradas."
-        
+
+    #Saca un promedio de edad con todos las personas agregadas anteriormente.
     def promedioEdad(self):
         nodoActual = self.primero
         edades = 0
