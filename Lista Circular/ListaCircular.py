@@ -59,30 +59,6 @@ class ListaCircular():
                 break
         return modificado
     
-    def eliminar_malo(self):
-        numero= int(input("Digite el número que desea eliminar:"))
-        nodo_actual = self.primero
-
-        if nodo_actual is not None and nodo_actual.dato == numero:
-            self.primero = nodo_actual.get_siguiente()
-            nodo_actual = self.ultimo
-            
-            
-        anterior = None
-        while nodo_actual is not None and nodo_actual.get_dato() != numero:
-            anterior = nodo_actual
-            nodo_actual = nodo_actual.get_siguiente()
-
-            if nodo_actual == self.primero:
-                break
-            
-        if nodo_actual is None:
-            return
-
-        anterior.set_siguiente(nodo_actual.get_siguiente())
-        nodo_actual = None
-        
-    
     def eliminar(self, dato):
         if self.es_vacia():
             print("La lista esta vacia.")
