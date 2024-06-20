@@ -1,60 +1,61 @@
 import heapq
-# En esta clase se van a encontrar los componentes de un grafo
+
 class Grafo:
     def __init__(self):
-        self.nodo = set()
-        self.arista = {} # diccionario que mapea cada nodo a una lista de nodos adyacentes
-        self.pesos = {} 
+        self.nodos = set()
+        self.aristas = {}  # Diccionario que mapea cada nodo a una lista de nodos adyacentes
+        self.pesos = {}    # Diccionario que mapea cada par de nodos a su peso
 
-    def nuevo_nodo(self, valor):
-        self.nodo.add(valor)
-        self.arista[valor] = []
+    def agregar_nodo(self, valor):
+        self.nodos.add(valor)
+        self.aristas[valor] = []
 
-    def nueva_arista(self, desde_nodo, a_nodo, peso):
-        self.arista[desde_nodo].append(a_nodo)
-        self.arista[a_nodo].append(desde_nodo)
+    def agregar_arista(self, desde_nodo, a_nodo, peso):
+        self.aristas[desde_nodo].append(a_nodo)
+        self.aristas[a_nodo].append(desde_nodo)
         self.pesos[(desde_nodo, a_nodo)] = peso
         self.pesos[(a_nodo, desde_nodo)] = peso
+        
+    # algoritmo que determina el camino más corto de un nodo a otro 
+    def dijkstra(self, inicial):
+        visitado = {inicial: 0} # Funciona eligiendo un nodo como inicial
+        ruta = {}
+        nodos_pendientes = set(self.nodos)
+        cola_prioridad = [(0, inicial)] # cola de prioridad que almacena los nodos a visitar
 
-# algoritmo que determina el camino más corto de un nodo a otro 
-def dijkstra(grafo, inicial):
-    visitado = {inicial: 0} # Funciona eligiendo un nodo como inicial
-    ruta = {}
+        while nodos_pendientes and cola_prioridad: # Mientras haya nodos sin visitar y la pila no este vacía
+            costo_actual, nodo_actual = heapq.heappop(cola_prioridad) # Usa una cola de prioridad
+            if nodo_actual not in nodos_pendientes:
+                continue
 
-    nodo = set(grafo.nodo)
-    pila = [(0, inicial)] # cola de prioridad que almacena los nodos a visitar
+            nodos_pendientes.remove(nodo_actual)
+            for vecino in self.aristas[nodo_actual]:
+                if vecino in nodos_pendientes:
+                    nuevo_costo = costo_actual + self.pesos[(nodo_actual, vecino)] # Calculamos el nuevo coste para llegar al vecino
+                    if nuevo_costo < visitado.get(vecino, float('inf')):
+                        visitado[vecino] = nuevo_costo
+                        heapq.heappush(cola_prioridad, (nuevo_costo, vecino))
+                        ruta[vecino] = nodo_actual
 
-    while nodo and pila: # Mientras haya nodos sin visitar y la pila no este vacía
-        (costo, min_nodo) = heapq.heappop(pila) # Usa una cola de prioridad
-        if min_nodo not in nodo: 
-            continue
+        return visitado, ruta
 
-        nodo.remove(min_nodo)
-        for vecino in grafo.arista[min_nodo]:
-            if vecino in nodo:
-                nuevo_costo = costo + grafo.pesos[(min_nodo, vecino)] # Calculamos el nuevo coste para llegar al vecino
-                if nuevo_costo < visitado.get(vecino, float('inf')): # Eso es infinito
-                    visitado[vecino] = nuevo_costo
-                    heapq.heappush(pila, (nuevo_costo, vecino))
-                    ruta[vecino] = min_nodo # actualiza el diccionario 
+    def ruta_mas_corta(self, origen, destino):
+        pesos, ruta = self.dijkstra(origen)
+        camino = [destino]
 
-    return visitado, ruta
+        while destino in ruta:
+            destino = ruta[destino]
+            camino.append(destino)
 
-def ruta_mas_corta(grafo, origen, destino):
-    pesos, ruta = dijkstra(grafo, origen)
-    camino = [destino]
+        camino.reverse()
+        return camino
 
-    while destino in ruta:
-        destino = ruta[destino]
-        camino.append(destino)
 
-    camino.reverse()
-    return camino
 # Crear el grafo
 g = Grafo()
 nodos = ['A', 'B', 'C', 'D', 'E']
-for n in nodos:
-    g.nuevo_nodo(n)
+for nodo in nodos:
+    g.agregar_nodo(nodo)
 
 aristas = [
     ('A', 'B', 1),
@@ -66,10 +67,11 @@ aristas = [
 ]
 
 for arista in aristas:
-    g.nueva_arista(*arista)
+    g.agregar_arista(*arista)
 
 # Calcular la ruta más corta
 origen = 'A'
 destino = 'E'
-caminito = ruta_mas_corta(g, origen, destino)
-print(f"La ruta más corta de {origen} a {destino} es {caminito}")
+camino = g.ruta_mas_corta(origen, destino)
+print(f"La ruta más corta de {origen} a {destino} es {camino}")
+
